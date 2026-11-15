@@ -28,7 +28,7 @@ Chaque dossier est un projet autonome. Il reprend le résultat de la séance pr�
 ## Lancer une démonstration
 
 ```bash
-git clone https://github.com/<votre-compte>/inf37407-taskflow-frontend.git
+git clone https://github.com/yyaddaden/inf37407-taskflow-frontend.git
 cd inf37407-taskflow-frontend/s08-taskflow-react
 npm install
 npm run dev
