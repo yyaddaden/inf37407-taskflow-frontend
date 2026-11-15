@@ -4,7 +4,9 @@ import TaskForm from "./components/TaskForm";
 
 import type { Task } from "./types/Task";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
+const STORAGE_KEY = "taskflow.tasks";
 
 const initialTasks: Task[] = [
   { id: 1, title: "Créer une API Django", status: "todo" },
@@ -12,9 +14,25 @@ const initialTasks: Task[] = [
   { id: 3, title: "Écrire des tests unitaires", status: "done" },
 ];
 
+function loadTasks(): Task[] {
+  const saved = localStorage.getItem(STORAGE_KEY);
+  return saved ? JSON.parse(saved) : initialTasks;
+}
+
 export default function App() {
   // State : App centralise les données partagées.
-  const [tasks, setTasks] = useState<Task[]>(initialTasks);
+  const [tasks, setTasks] = useState<Task[]>(loadTasks);
+
+  const remaining = tasks.filter((task) => task.status !== "done").length;
+
+  // Effets : synchronisation avec des systèmes externes.
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+  }, [tasks]);
+
+  useEffect(() => {
+    document.title = `TaskFlow (${remaining})`;
+  }, [remaining]);
 
   const addTask = (title: string) => {
     const newTask: Task = { id: Date.now(), title, status: "todo" };
@@ -33,7 +51,7 @@ export default function App() {
 
   return (
     <main className="app">
-      <Header />
+      <Header remaining={remaining} />
       <TaskForm onAdd={addTask} />
       <TaskList tasks={tasks} onComplete={completeTask} onDelete={deleteTask} />
     </main>
